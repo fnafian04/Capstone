@@ -30,6 +30,20 @@ body {
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     z-index: 1000;
 }
+#sidebar-wrapper {
+    background: linear-gradient(180deg, #1e3a8a, #1f2d98);
+}
+
+.list-group-item i {
+    width: 20px;
+    text-align: center;
+    opacity: 0.9;
+}
+
+.list-group-item.active {
+    box-shadow: inset 4px 0 0 #93c5fd;
+}
+
 
 .sidebar-heading {
     text-align: center;
@@ -121,6 +135,27 @@ body {
     background: #eef1ff !important;
     transform: scale(1.01);
 }
+
+.table th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.table tbody tr:hover {
+    background: #f1f5ff !important;
+    transform: translateY(-1px);
+}
+
 
 /* ————————— BUTTONS ————————— */
 button, .btn {
@@ -231,6 +266,106 @@ button, .btn {
     font-weight: 700; font-size: 1.2rem;
     flex-shrink: 0; /* Mencegah avatar gepeng */
 }
+/* ===== GLOBAL POLISH ===== */
+h3, h5 {
+    letter-spacing: 0.3px;
+}
+
+#page-content-wrapper {
+    background: #f5f6fb;
+}
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.section-header h3 {
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.section-header small {
+    color: #64748b;
+}
+
+/* ===== CARD HEADER CUSTOM ===== */
+.card-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 26px;
+    border-bottom: 1px solid #eef1ff;
+    background: linear-gradient(180deg, #fafbff, #ffffff);
+    border-radius: 26px 26px 0 0;
+}
+
+.card-custom.bg-primary {
+    background: linear-gradient(135deg, #667eea, #4f46e5);
+}
+
+.card-custom.bg-success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+.badge {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+}
+.modal-title {
+    letter-spacing: 0.4px;
+}
+
+.modal-footer {
+    padding: 18px 26px;
+}
+
+/* ===============================
+   BADGE ID GLOBAL (FINAL)
+================================ */
+
+.badge-id {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* MENU */
+.badge-menu {
+    background: rgba(251,146,60,0.18);
+    color: #ea580c;
+}
+
+/* TOKO */
+.badge-toko {
+    background: rgba(34,197,94,0.18);
+    color: #16a34a;
+}
+
+/* KASIR */
+.badge-kasir {
+    background: rgba(99,102,241,0.18);
+    color: #4f46e5;
+}
+
+/* PESANAN */
+.badge-pesanan {
+    background: rgba(59,130,246,0.18);
+    color: #2563eb;
+}
+
+
+
 </style>
 @endsection
 
@@ -513,7 +648,13 @@ button, .btn {
             const data = await res.json();
             let html = data.length ? '' : '<tr><td colspan="5" class="text-center py-4 text-muted">Tidak ada pesanan pending</td></tr>';
             data.forEach(o => {
-                html += `<tr><td>${new Date(o.waktu_pemesanan).toLocaleString()}</td><td>${o.no_meja}</td><td>${o.nama_pelanggan}</td><td class="text-end fw-bold">${formatRupiah(o.total_pembayaran)}</td><td class="text-center"><span class="badge bg-warning text-dark">PENDING</span></td></tr>`;
+                html += `<tr>
+                    <td>${new Date(o.waktu_pemesanan).toLocaleString()}</td>
+                    <td>${o.no_meja}</td>
+                    <td>${o.nama_pelanggan}</td>
+                    <td class="text-end fw-bold">${formatRupiah(o.total_pembayaran)}</td>
+                    <td class="text-center"><span class="badge bg-warning text-dark">PENDING</span></td>
+                </tr>`;
             });
             tbody.innerHTML = html;
         } catch(e) { console.error(e); }
@@ -529,7 +670,21 @@ button, .btn {
             data.forEach(o => {
                 const kasir = o.kasir ? o.kasir.username : '-';
                 const badge = o.status_pesanan == 'selesai' ? 'bg-success' : 'bg-primary';
-                html += `<tr><td class="text-center">#${o.id_transaksi}</td><td>${new Date(o.waktu_pemesanan).toLocaleString()}</td><td>${o.no_meja}</td><td>${o.nama_pelanggan}</td><td>${kasir}</td><td class="text-end fw-bold">${formatRupiah(o.total_pembayaran)}</td><td class="text-center"><span class="badge ${badge}">${o.status_pesanan.toUpperCase()}</span></td></tr>`;
+                html += `
+            <tr>
+                <td class="text-center">
+    <span class="badge-id badge-pesanan">
+        ${formatInvoice(o.id_transaksi)}
+    </span>
+</td>
+
+
+                <td>${new Date(o.waktu_pemesanan).toLocaleString()}</td>
+                <td>${o.no_meja}</td><td>${o.nama_pelanggan}</td>
+                <td>${kasir}</td>
+                <td class="text-end fw-bold">${formatRupiah(o.total_pembayaran)}</td>
+                <td class="text-center"><span class="badge ${badge}">${o.status_pesanan.toUpperCase()}</span></td>
+            </tr>`;
             });
             tbody.innerHTML = html;
         } catch(e) { console.error(e); }
@@ -547,7 +702,13 @@ button, .btn {
                 : `<div class="rounded-circle bg-light border d-flex align-items-center justify-content-center text-muted mx-auto" style="width:45px; height:45px;"><i class="fas fa-store"></i></div>`;
 
             html += `<tr>
-                <td class="text-center fw-bold">${t.id_toko}</td>
+                <td class="text-center">
+    <span class="badge-id badge-toko">
+        ${formatToko(t.id_toko)}
+    </span>
+</td>
+
+
                 <td class="text-center">${logoHtml}</td>
                 <td class="fw-bold text-primary">${t.nama_toko}</td>
                 <td>${t.alamat}</td>
@@ -630,8 +791,9 @@ button, .btn {
         const select = document.getElementById('id-toko-menu');
         select.innerHTML = '';
         data.forEach(t => {
-            filter.innerHTML += `<option value="${t.id_toko}">${t.nama_toko}</option>`;
-            select.innerHTML += `<option value="${t.id_toko}">${t.nama_toko}</option>`;
+            filter.innerHTML += `<option value="${t.id_toko}">${formatToko(t.id_toko)} - ${t.nama_toko}</option>`;
+select.innerHTML += `<option value="${t.id_toko}">${formatToko(t.id_toko)} - ${t.nama_toko}</option>`;
+
         });
         filter.value = currentFilter;
     }
@@ -644,7 +806,21 @@ button, .btn {
         let html = data.length ? '' : '<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada menu</td></tr>';
         data.forEach(m => {
              const foto = m.foto_url ? `<img src="${m.foto_url}" width="50" height="50" class="rounded border" style="object-fit:cover;">` : '<span class="text-muted small">No Img</span>';
-             html += `<tr><td class="text-center">${m.id_menu}</td><td class="text-center">${foto}</td><td>${m.nama_menu}</td><td>${m.toko ? m.toko.nama_toko : '-'}</td><td class="text-end">${formatRupiah(m.harga_satuan)}</td><td class="text-center"><button class="btn btn-sm btn-warning me-1" onclick="editMenu(${m.id_menu})"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="hapusMenu(${m.id_menu})"><i class="fas fa-trash"></i></button></td></tr>`;
+             html += `<tr>
+             <td class="text-center">
+    <span class="badge-id badge-menu">
+        ${formatMenu(m.id_menu)}
+    </span>
+</td>
+
+
+
+             <td class="text-center">${foto}</td>
+             <td>${m.nama_menu}</td>
+             <td>${m.toko ? m.toko.nama_toko : '-'}</td>
+             <td class="text-end">${formatRupiah(m.harga_satuan)}</td>
+             <td class="text-center"><button class="btn btn-sm btn-warning me-1" onclick="editMenu(${m.id_menu})"><i class="fas fa-edit"></i></button>
+             <button class="btn btn-sm btn-danger" onclick="hapusMenu(${m.id_menu})"><i class="fas fa-trash"></i></button></td></tr>`;
         });
         document.getElementById('menu-list').innerHTML = html;
         document.getElementById('count-menu').innerText = data.length;
@@ -778,7 +954,13 @@ async function loadKasir() {
 
                 html += `
                 <tr>
-                    <td class="text-center fw-bold">${user.id}</td>
+                    <td class="text-center">
+    <span class="badge-id badge-kasir">
+        ${formatKasir(user.id)}
+    </span>
+</td>
+
+
                     <td class="text-center">${avatarHtml}</td>
                     <td class="fw-bold text-primary">${user.username}</td>
                     <td class="text-center">
@@ -863,5 +1045,26 @@ async function loadKasir() {
 
     async function loadCounts() { loadToko(); loadMenu(); }
     loadCounts();
+
+    function formatInvoice(id) {
+    return '#PS' + id.toString().padStart(4, '0');
+}
+
+function formatKasir(id) {
+    if (!id) return 'KS-';
+    return 'KS' + id.toString();
+}
+
+function formatToko(id) {
+    if (!id) return 'TK-';
+    return 'TK' + id.toString();
+}
+
+function formatMenu(id) {
+    if (!id) return 'MN-';
+    return 'MN' + id.toString();
+}
+
+
 </script>
 @endsection

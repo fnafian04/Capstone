@@ -15,6 +15,12 @@
     font-size: 1.3rem;
     font-weight: 800;
 }
+/* WARNA LOGO & JUDUL DASHBOARD KASIR */
+.kasir-navbar .navbar-brand,
+.kasir-navbar .navbar-brand i {
+    color: #2563eb !important; /* Biru modern (Tailwind Blue-600) */
+}
+
 
 /* =========================
    NAV PILLS
@@ -85,11 +91,47 @@
 /* =========================
    TOTAL
 ========================= */
+
+@keyframes pulseBlue {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(13,110,253,0.45);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 12px rgba(13,110,253,0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(13,110,253,0);
+    }
+}
+
 .total-text {
     font-size: 1.6rem;
     font-weight: 800;
-    color: #667eea;
+    color: #0d6efd;
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 14px;
+    animation: pulseBlue 1.6s infinite;
 }
+
+
+
+.modal-body span {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.modal-body strong {
+    font-weight: 700;
+}
+
+.modal-body table tr td {
+    padding: 6px 0;
+}
+
 </style>
 @endsection
 
@@ -175,12 +217,29 @@
                     <span>Meja</span>
                     <strong id="modal-meja"></strong>
                 </div>
+                <div class="d-flex justify-content-between mb-3">
+    <span>Waktu</span>
+    <strong id="modal-waktu" class="text-muted"></strong>
+</div>
 
-                <table class="table table-sm">
+
+<table class="table table-sm table-borderless">
+
                     <tbody id="modal-items"></tbody>
                 </table>
 
-                <div class="text-end total-text mt-3" id="modal-total"></div>
+                <div class="d-flex justify-content-between align-items-center mt-4 p-3 rounded"
+     style="background:#f5f6ff">
+    <span class="fw-semibold">Total Pembayaran</span>
+    <div class="text-end mt-3">
+    <span class="total-text">
+        <i class="fas fa-credit-card me-2"></i>
+        <span id="modal-total"></span>
+    </span>
+</div>
+
+</div>
+
             </div>
 
             <div class="modal-footer" id="modal-actions"></div>
@@ -332,10 +391,22 @@
             
             let html = '';
             currentData.forEach(order => {
-                const badge = order.status_pesanan === 'selesai' ? 'bg-success' : 'bg-primary';
+                let badge = 'bg-secondary';
+if(order.status_pesanan === 'selesai') badge = 'bg-success';
+function invoice(id) {
+    return 'PS' + id.toString().padStart(4, '0');
+}
+
+
                 html += `
                 <tr>
-                    <td>#${order.id_transaksi}</td>
+                    <td>
+    <span class="badge-id badge-pesanan">
+        ${formatPesanan(order.id_transaksi)}
+    </span>
+</td>
+
+
                     <td>${order.no_meja}</td>
                     <td>${order.nama_pelanggan}</td>
                     <td>${formatRupiah(order.total_pembayaran)}</td>
@@ -351,7 +422,21 @@ function showDetail(id, status) {
     const order = currentData.find(o => o.id_transaksi == id);
     if(!order) return;
 
-    document.getElementById('modal-id').innerText = '#' + order.id_transaksi;
+    document.getElementById('modal-id').innerHTML = `
+    <span class="badge-id badge-pesanan">
+        ${formatPesanan(order.id_transaksi)}
+    </span>
+`;
+
+    document.getElementById('modal-waktu').innerText =
+    new Date(order.waktu_pemesanan).toLocaleString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
     document.getElementById('modal-nama').innerText = order.nama_pelanggan;
     document.getElementById('modal-meja').innerText = order.no_meja;
     document.getElementById('modal-total').innerText = formatRupiah(order.total_pembayaran);
@@ -366,26 +451,21 @@ function showDetail(id, status) {
     document.getElementById('modal-items').innerHTML = itemsHtml;
 
     let btns = '';
-    if(status === 'pending') {
-        btns = `
-            <button class="btn btn-danger w-100 mb-2" onclick="hapusTransaksi(${id})">
-                ❌ Hapus Pesanan
-            </button>
-            <button class="btn btn-success w-100" onclick="validasi(${id})">
-                ✔ Validasi & Cetak
-            </button>`;
-    } else {
-        btns = `
-            <button class="btn btn-dark me-2" onclick="cetakUlang(${id})">
-                🖨 Cetak
-            </button>`;
-        if(status === 'diproses') {
-            btns += `
-                <button class="btn btn-primary" onclick="selesai(${id})">
-                    ✔ Selesai
-                </button>`;
-        }
-    }
+if(status === 'pending') {
+    btns = `
+        <button class="btn btn-danger w-100 mb-2" onclick="hapusTransaksi(${id})">
+            ❌ Hapus Pesanan
+        </button>
+        <button class="btn btn-success w-100" onclick="validasi(${id})">
+            ✔ Validasi & Cetak
+        </button>`;
+} else if(status === 'selesai') {
+    btns = `
+        <button class="btn btn-dark w-100" onclick="cetakUlang(${id})">
+            🖨 Cetak Ulang
+        </button>`;
+}
+
 
     document.getElementById('modal-actions').innerHTML = btns;
     detailModal.show();

@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Inject Data
-    document.getElementById("id-trx").innerText = "#" + data.id_transaksi;
+    document.getElementById("id-trx").innerText = "PS" + data.id_transaksi;
     document.getElementById("tgl-trx").innerText = new Date().toLocaleString("id-ID");
     document.getElementById("kasir-name").innerText = data.kasir?.username || data.id_kasir || "Kasir";
     document.getElementById("meja").innerText = `${data.no_meja} (${data.nama_pelanggan})`;

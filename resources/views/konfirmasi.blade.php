@@ -157,6 +157,19 @@
 .back-link:hover {
     text-decoration: underline;
 }
+
+/* ================= PAYMENT INFO ================= */
+.payment-info {
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: #eef2ff;
+    border-radius: var(--radius);
+    color: var(--primary);
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid #dbe4ff;
+}
+
 </style>
 @endsection
 
@@ -174,7 +187,8 @@
         <!-- TITLE -->
         <div class="confirm-title">Pesanan Berhasil 🎉</div>
         <div class="confirm-subtitle">
-            Tunjukkan halaman ini ke kasir untuk proses pembayaran
+        Simpan halaman ini dan tunjukkan ke kasir untuk proses pembayaran
+
         </div>
 
         <!-- INFO -->
@@ -203,11 +217,11 @@
             <span id="conf-total">Rp 0</span>
         </div>
 
-        <!-- STATUS -->
-        <div class="status-tag">
-            <i class="fas fa-hourglass-half me-1"></i>
-            MENUNGGU PEMBAYARAN
-        </div>
+        <div class="payment-info">
+    <i class="fas fa-info-circle me-1"></i>
+    Silakan lakukan pembayaran di kasir sesuai total di atas
+</div>
+
 
         <a class="back-link" href="/menu">
             ← Kembali ke Menu
@@ -236,8 +250,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const data = JSON.parse(dataString);
+    function formatInvoice(id) {
+    return '#PS' + id.toString().padStart(4, '0');
+}
 
-    document.getElementById("conf-id").innerText = "#" + data.id_transaksi;
+
+    document.getElementById("conf-id").innerText = formatInvoice(data.id_transaksi);
     document.getElementById("conf-nama").innerText = data.nama_pelanggan;
     document.getElementById("conf-meja").innerText = data.no_meja;
     document.getElementById("conf-total").innerText = formatRupiah(data.total_pembayaran);

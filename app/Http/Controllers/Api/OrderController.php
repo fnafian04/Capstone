@@ -23,7 +23,7 @@ class OrderController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_pelanggan' => 'required|string|max:100',
-            'no_telepon_pelanggan' => 'required|string|max:20',
+           
             'no_meja' => 'required|string|max:10',
             'items' => 'required|array|min:1',
             'items.*.id_menu' => 'required|integer|exists:menu,id_menu',
@@ -44,7 +44,7 @@ class OrderController extends Controller
 
                 $transaksi = Transaksi::create([
                     'nama_pelanggan' => $validated['nama_pelanggan'],
-                    'no_telepon_pelanggan' => $validated['no_telepon_pelanggan'],
+                
                     'no_meja' => $validated['no_meja'],
                     'status_pesanan' => 'pending',
                     'total_pembayaran' => 0,

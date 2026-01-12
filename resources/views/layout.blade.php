@@ -98,6 +98,41 @@
             height: 3rem;
             color: var(--primary);
         }
+        /* ======================
+   BADGE ID
+====================== */
+.badge-id {
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Kasir */
+.badge-kasir {
+    background: rgba(102,126,234,0.15);
+    color: #667eea;
+}
+
+/* Toko */
+.badge-toko {
+    background: rgba(72,187,120,0.15);
+    color: #48bb78;
+}
+
+/* Menu */
+.badge-menu {
+    background: rgba(237,137,54,0.15);
+    color: #ed8936;
+}
+
+/* Pesanan */
+.badge-pesanan {
+    background: rgba(59,130,246,0.15);
+    color: #3b82f6;
+}
+
 
         /* PAGE SPECIFIC STYLE */
         @yield('styles')
@@ -138,6 +173,29 @@
                 minimumFractionDigits: 0
             }).format(angka);
         }
+        /* ======================
+   FORMAT ID GLOBAL
+====================== */
+function formatKasir(id) {
+    if (!id) return 'KS-';
+    return 'KS' + id;
+}
+
+function formatToko(id) {
+    if (!id) return 'TK-';
+    return 'TK' + id;
+}
+
+function formatMenu(id) {
+    if (!id) return 'MN-';
+    return 'MN' + id;
+}
+
+function formatPesanan(id) {
+    if (!id) return 'PS-';
+    return 'PS' + id.toString().padStart(4, '0');
+}
+        
     </script>
 
     @yield('scripts')

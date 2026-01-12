@@ -37,7 +37,7 @@ class ManajemenKasirController extends Controller
 
             $user->username = $request->username;
             if ($request->filled('password')) {
-                $user->password = Hash::make($request->password);
+                $user->password = $request->password;
             }
             $user->save();
 
@@ -62,7 +62,7 @@ class ManajemenKasirController extends Controller
         try {
             $user = User::create([
                 'username' => $request->username,
-                'password' => Hash::make($request->password),
+                'password' => $request->password,
                 'role'     => 'kasir',
                 'id_toko'  => null,
             ]);

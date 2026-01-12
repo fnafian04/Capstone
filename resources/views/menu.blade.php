@@ -4,6 +4,19 @@
 
 @section('styles')
 <style>
+    .container {
+    max-width: 1200px;
+}
+
+.text-center h2 {
+    letter-spacing: -0.5px;
+}
+
+.text-center {
+    background: linear-gradient(180deg, #f4f7ff 0%, #ffffff 100%);
+    padding-bottom: 12px;
+}
+
 /* ——————— RESET ——————— */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -27,10 +40,11 @@ body {
 
 /* ————————— SEARCH BAR ————————— */
 .input-group {
-    border-radius: 50px;
+    border-radius: 60px;
     overflow: hidden;
     background: white;
-    box-shadow: 0 8px 25px rgba(61,106,255,0.15);
+    box-shadow: 0 10px 30px rgba(61,106,255,0.18);
+    transition: 0.3s ease;
 }
 
 .input-group-text {
@@ -38,6 +52,11 @@ body {
     border: none;
     padding-left: 20px;
     padding-right: 20px;
+}
+
+.input-group:focus-within {
+    box-shadow: 0 14px 36px rgba(61,106,255,0.28);
+    transform: translateY(-1px);
 }
 
 #search-input {
@@ -65,7 +84,9 @@ body {
     margin-bottom: 18px;
     padding: 16px;
     border-radius: 18px;
-    background: white;
+    backdrop-filter: blur(6px);
+    background: rgba(255,255,255,0.9);
+    border-left: 6px solid #3d6aff;
     border: 1px solid #dde6ff;
     box-shadow: 0 6px 18px rgba(61, 106, 255, 0.08);
 }
@@ -92,6 +113,16 @@ body {
     transition: 0.3s ease;
     border: 1px solid #e4e8ff;
     box-shadow: 0 8px 28px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.card-custom::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(61,106,255,0.08);
 }
 
 .card-custom:hover {
@@ -134,10 +165,11 @@ body {
 
 /* HARGA */
 .text-success {
-    color: #3d6aff !important;
-    font-size: 1.1rem;
-    font-weight: 800;
+    background: linear-gradient(135deg, #3d6aff, #5c8bff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
+
 
 /* ————————— BUTTONS ————————— */
 .btn {
@@ -203,6 +235,17 @@ body {
     background: white;
     color: #1a1a1a;
     border: 1px solid #dde6ff;
+    animation: fadeUp 0.35s ease;
+}
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .carousel-inner img {
@@ -247,6 +290,12 @@ body {
     font-size: 1.5rem;
     font-weight: 800;
     color: #3d6aff;
+    animation: pulsePrice 1.8s infinite;
+}
+@keyframes pulsePrice {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 /* ————————— RESPONSIVE ————————— */
@@ -268,6 +317,21 @@ body {
         font-size: 1.1rem;
     }
 }
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+@keyframes pulseSoft {
+    0% { box-shadow: 0 0 0 0 rgba(61,106,255,0.6); }
+    70% { box-shadow: 0 0 0 14px rgba(61,106,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(61,106,255,0); }
+}
+
+.cart-float {
+    animation: pulseSoft 2.8s infinite;
+}
+
 
 </style>
 @endsection
@@ -391,8 +455,8 @@ body {
                     <label class="form-label small">Nama Anda</label>
                     <input type="text" class="form-control mb-3" id="nama-input">
 
-                    <label class="form-label small">Nomor Telepon</label>
-                    <input type="tel" class="form-control mb-3" id="telp-input">
+                    <!-- <label class="form-label small">Nomor Telepon</label>
+                    <input type="tel" class="form-control mb-3" id="telp-input"> -->
 
                     <label class="form-label small">Nomor Meja</label>
                     <select id="meja-input" class="form-select">
@@ -670,7 +734,7 @@ function removeFromCart(id) {
 ===================== */
 async function submitOrder() {
     const nama = document.getElementById('nama-input').value;
-    const telp = document.getElementById('telp-input').value;
+    // const telp = document.getElementById('telp-input').value;
     const meja = document.getElementById('meja-input').value;
 
     const items = Object.entries(cart).map(([id, item]) => ({
@@ -678,7 +742,7 @@ async function submitOrder() {
         jumlah: item.qty
     }));
 
-    if (!nama || !telp || !meja) {
+    if (!nama || !meja) {
         alert("Mohon lengkapi semua data!");
         return;
     }
@@ -694,7 +758,7 @@ async function submitOrder() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 nama_pelanggan: nama,
-                no_telepon_pelanggan: telp,
+               // no_telepon_pelanggan: telp,
                 no_meja: meja,
                 items
             })

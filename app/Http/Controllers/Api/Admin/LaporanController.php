@@ -3,39 +3,46 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Transaksi; // <-- Panggil Model Transaksi
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // <-- Panggil DB facade
+use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
 {
     /**
-     * Fungsi 1: Menampilkan laporan penjualan (GET)
+     * LAPORAN PENJUALAN
+     * Hanya transaksi SELESAI yang dihitung
      * GET /api/admin/laporan
-     * GET /api/admin/laporan?status=diproses
+     * GET /api/admin/laporan?status=selesai
      */
-    public function getLaporan(Request $request){
-        // Mulai query
+    public function getLaporan(Request $request)
+    {
         $query = Transaksi::query();
 
-        // Filter berdasarkan status jika ada
+        // Jika filter status dikirim
         if ($request->has('status')) {
+            if (!in_array($request->status, ['pending', 'selesai'])) {
+                return response()->json([
+                    'message' => 'Status tidak valid'
+                ], 400);
+            }
+
             $query->where('status_pesanan', $request->status);
         } else {
-            // Defaultnya, hanya tampilkan yg sudah dibayar
-            $query->whereIn('status_pesanan', ['diproses', 'selesai']);
+            // Default laporan: hanya transaksi selesai
+            $query->where('status_pesanan', 'selesai');
         }
 
-        // Ambil data
-        $transaksi = $query->with('detailTransaksi.menu.toko', 'kasir') // Ambil relasi
-                           ->orderBy('waktu_pemesanan', 'desc')
-                           ->get();
-        
-        // Hitung total omset
+        $transaksi = $query
+            ->with('detailTransaksi.menu.toko', 'kasir')
+            ->orderBy('waktu_pemesanan', 'desc')
+            ->get();
+
+        // Total omset hanya dari transaksi selesai
         $totalOmset = $transaksi->sum('total_pembayaran');
-        
-        // Hitung omset per toko
-        $omsetPerToko = Transaksi::whereIn('status_pesanan', ['diproses', 'selesai'])
+
+        // Omset per toko (HANYA SELESAI)
+        $omsetPerToko = Transaksi::where('status_pesanan', 'selesai')
             ->join('detail_transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->join('menu', 'detail_transaksi.id_menu', '=', 'menu.id_menu')
             ->join('toko', 'menu.id_toko', '=', 'toko.id_toko')
@@ -50,37 +57,31 @@ class LaporanController extends Controller
             'detail_transaksi' => $transaksi,
         ]);
     }
-        // Tambahkan method baru di LaporanController
-    public function getRiwayatTransaksi()
-    {
-        $riwayat = \App\Models\Transaksi::with(['detailTransaksi.menu.toko', 'kasir'])
-                    ->whereIn('status_pesanan', ['diproses', 'selesai'])
-                    ->orderBy('waktu_pemesanan', 'desc')
-                    ->get();
-        return response()->json($riwayat);
-    }
 
     /**
-     * Ambil semua pesanan pending (untuk monitoring admin)
+     * PESANAN PENDING (UNTUK MONITORING ADMIN)
      */
     public function getPending()
     {
         $data = Transaksi::where('status_pesanan', 'pending')
-                         ->with('detailTransaksi.menu.toko')
-                         ->orderBy('waktu_pemesanan', 'desc')
-                         ->get();
+            ->with('detailTransaksi.menu.toko')
+            ->orderBy('waktu_pemesanan', 'desc')
+            ->get();
+
         return response()->json($data);
     }
 
     /**
-     * Ambil semua riwayat transaksi
+     * RIWAYAT TRANSAKSI
+     * Hanya transaksi SELESAI
      */
     public function getRiwayat()
     {
-        $data = Transaksi::whereIn('status_pesanan', ['diproses', 'selesai'])
-                         ->with('detailTransaksi.menu.toko', 'kasir')
-                         ->orderBy('waktu_pemesanan', 'desc')
-                         ->get();
+        $data = Transaksi::where('status_pesanan', 'selesai')
+            ->with('detailTransaksi.menu.toko', 'kasir')
+            ->orderBy('waktu_pemesanan', 'desc')
+            ->get();
+
         return response()->json($data);
     }
 }
