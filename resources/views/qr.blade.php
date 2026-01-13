@@ -1,78 +1,209 @@
 @extends('layout')
 
-@section('title', 'Generator QR Code')
+@section('title', 'QR Menu')
 
 @section('styles')
 <style>
-    /* --- CSS KHUSUS CETAK (PRINT) --- */
-    @media print {
-        /* 1. Sembunyikan semua elemen body utama */
-        body * {
-            visibility: hidden;
-        }
+/* ================= ROOT ================= */
+:root {
+    --primary: #3d6aff;
+    --primary-soft: #eef2ff;
+    --radius: 22px;
+}
 
-        /* 2. Tampilkan HANYA Container QR Code */
-        #printable-area, #printable-area * {
-            visibility: visible;
-        }
-
-        /* 3. Atur posisi area cetak ke tengah kertas sepenuhnya */
-        #printable-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100vh; /* Pakai tinggi viewport penuh */
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;     /* Tengah Vertikal */
-            justify-content: center; /* Tengah Horizontal */
-            border: none !important;
-            box-shadow: none !important;
-            background: white !important;
-        }
-
-        /* 4. Perbesar Ukuran QR Code Maksimal */
-        #qrcode img {
-            width: 600px !important;  /* Ukuran Sangat Besar */
-            height: 600px !important;
-            margin: 0;                /* Hapus margin agar pas di tengah flex */
-            display: block;
-        }
-
-        /* 5. Pastikan elemen non-print benar-benar hilang */
-        .no-print, .card-body-content {
-            display: none !important;
-        }
+/* ================= PRINT MODE ================= */
+@media print {
+    body * {
+        visibility: hidden;
     }
+
+    #printable-area, #printable-area * {
+        visibility: visible;
+    }
+
+    #printable-area {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    #qrcode img {
+        width: 600px !important;
+        height: 600px !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ================= PAGE ================= */
+.qr-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef2ff, #f8faff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* ================= CARD ================= */
+.qr-card {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 18px 40px rgba(61,106,255,0.18);
+    border: 1px solid #e4e8ff;
+}
+
+/* ================= HEADER ================= */
+.qr-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 2px;
+    
+}
+
+.qr-subtitle {
+    font-size: .95rem;
+    color: #6b7280;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+/* ================= QR ================= */
+.qr-box {
+    background: var(--primary-soft);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+#qrcode {
+    display: flex;
+    justify-content: center;
+}
+
+/* ================= URL ================= */
+.url-box {
+    background: #f9fafb;
+    border: 1px dashed #c7d2fe;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 18px;
+}
+
+.url-box small {
+    color: #6b7280;
+    display: block;
+}
+
+.url-box strong {
+    color: var(--primary);
+    font-size: .85rem;
+    word-break: break-all;
+}
+
+/* ================= BUTTON ================= */
+.btn-print {
+    background: linear-gradient(135deg, #3d6aff, #5c8bff);
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    padding: 10px;
+    box-shadow: 0 8px 20px rgba(61,106,255,.35);
+}
+
+.btn-print:hover {
+    opacity: .95;
+}
+
+/* ================= FOOTER ================= */
+.qr-footer {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.qr-footer a {
+    font-size: .85rem;
+    color: #6b7280;
+    text-decoration: none;
+}
+
+.qr-footer a:hover {
+    color: var(--primary);
+}
+
+.scan-hint {
+    line-height: 1;
+}
+
+.scan-icon {
+    font-size: 1rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    position: relative;
+    top:1px;
+}
+
+.scan-text {
+    font-size: .95rem;
+    color: #6b7280;
+    line-height: 1.2;
+}
+
 </style>
 @endsection
 
 @section('content')
-<div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
-    
-    <div class="card card-custom p-4 text-center" style="max-width: 400px; width: 100%;" id="printable-area">
-        
-        <div class="card-body-content no-print">
-            <h3 class="fw-bold text-primary mb-3">Scan QR Code</h3>
-            <p class="text-muted mb-4">Arahkan kamera HP Anda untuk membuka Menu Makanan.</p>
-        </div>
-        
-        <div id="qrcode" class="d-flex justify-content-center mb-4"></div>
-        
+<div class="qr-page">
+    <div class="qr-card" id="printable-area">
+
         <div class="no-print">
-            <div class="alert alert-light border">
-                <small class="text-muted d-block mb-1">URL Target:</small>
-                <strong id="url-display" class="text-break text-primary small">...</strong>
+        <h3 class="qr-title mb-2">SCAN ME</h3>
+
+
+        <div class="scan-hint d-flex justify-content-center align-items-center gap-2 mb-3">
+    <i class="fas fa-camera scan-icon"></i>
+    <span class="scan-text">
+    Arahkan kamera HP atau Google Lens <br>untuk membuka menu
+    </span>
+</div>
+
+
+
+
+        </div>
+
+        <div class="qr-box">
+            <div id="qrcode"></div>
+        </div>
+
+        <div class="no-print">
+            <div class="url-box">
+                <small>URL Menu</small>
+                <strong id="url-display">...</strong>
             </div>
 
-            <button onclick="window.print()" class="btn btn-primary w-100 mt-2">
+            <button onclick="window.print()" class="btn btn-print w-100 text-white">
                 <i class="fas fa-print me-2"></i> Cetak QR
             </button>
-            
-            <div class="mt-4 pt-3 border-top">
-                <a href="/login" class="text-decoration-none text-muted small">Ke Halaman Login</a>
+
+            <div class="qr-footer">
+                <a href="/login">Masuk ke Dashboard</a>
             </div>
         </div>
 
@@ -84,28 +215,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const hostname = window.location.hostname;
-        const port = window.location.port;
-        const protocol = window.location.protocol;
-        
-        // URL target ke halaman menu
-        const targetUrl = `${protocol}//${hostname}${port ? ':' + port : ''}/menu`;
+document.addEventListener('DOMContentLoaded', function () {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    const port = window.location.port;
 
-        document.getElementById('url-display').innerText = targetUrl;
+    const targetUrl = `${protocol}//${hostname}${port ? ':' + port : ''}/menu`;
 
-        const qrContainer = document.getElementById("qrcode");
-        qrContainer.innerHTML = ""; 
-        
-        // Generate QR (Ukuran default untuk layar)
-        new QRCode(qrContainer, {
-            text: targetUrl,
-            width: 250, 
-            height: 250,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
-    });
+    document.getElementById('url-display').innerText = targetUrl;
+
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = '';
+
+    new QRCode(qrContainer, {
+    text: targetUrl,
+    width: 260,
+    height: 260,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+});
+
+});
 </script>
 @endsection

@@ -332,6 +332,86 @@ body {
     animation: pulseSoft 2.8s infinite;
 }
 
+@media (max-width: 576px) {
+
+.card-body {
+    padding: 12px 12px;
+}
+
+.card-body h6 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    line-height: 1.25;
+}
+
+.card-body p {
+    font-size: 0.78rem;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.card-body .text-success {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+}
+
+@media (max-width: 576px) {
+
+/* ukuran modal */
+#productModal .modal-dialog {
+    max-width: 92%;
+    margin: 16px auto;
+}
+
+/* konten modal */
+#productModal .modal-content {
+    border-radius: 18px;
+}
+}
+
+@media (max-width: 576px) {
+
+/* carousel gambar */
+#productModal .carousel-inner img {
+    height: 220px;
+    object-fit: cover;
+}
+
+/* padding isi */
+#productModal .modal-body .p-4 {
+    padding: 14px !important;
+}
+
+/* judul menu */
+#productModal h4 {
+    font-size: 1.05rem;
+}
+
+/* harga */
+#detail-harga {
+    font-size: 1.15rem;
+}
+
+/* deskripsi */
+#detail-desc {
+    font-size: 0.85rem;
+    line-height: 1.35;
+}
+}
+
+@media (max-width: 576px) {
+    #productModal .modal-dialog {
+        align-self: flex-end;
+        margin-bottom: 0;
+    }
+
+    #productModal .modal-content {
+        border-radius: 20px 20px 0 0;
+    }
+}
+
+
 
 </style>
 @endsection
