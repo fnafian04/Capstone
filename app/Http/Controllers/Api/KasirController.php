@@ -24,7 +24,7 @@ class KasirController extends Controller
     public function getRiwayat()
     {
         return response()->json(
-            Transaksi::whereIn('status_pesanan', ['diproses', 'selesai'])
+            Transaksi::whereIn('status_pesanan', ['selesai'])
                 ->with(['detailTransaksi.menu.toko', 'kasir'])
                 ->orderBy('waktu_pemesanan', 'desc')
                 ->get()
@@ -43,7 +43,7 @@ class KasirController extends Controller
             return response()->json(['message' => 'Transaksi sudah diproses'], 400);
         }
 
-        $transaksi->status_pesanan = 'diproses';
+        $transaksi->status_pesanan = 'selesai';
         $transaksi->id_kasir = Auth::id();
         $transaksi->save();
 

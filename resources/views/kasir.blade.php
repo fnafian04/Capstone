@@ -484,6 +484,7 @@ if(status === 'pending') {
             if(res.ok) {
                 detailModal.hide();
                 loadPending();
+                loadHistory();  
                 // Panggil Fungsi Cetak Langsung
                 printReceipt(data.transaksi);
             }
