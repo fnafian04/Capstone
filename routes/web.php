@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-// 1. Halaman Utama (ROOT) sekarang adalah LOGIN
+// 1. Halaman Utama (ROOT)
 Route::get('/', function () {
-    return view('login');
+    return view('menu');
 });
 Route::get('/login', function () {
     return view('login');
